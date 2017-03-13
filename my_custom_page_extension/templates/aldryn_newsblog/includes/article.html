@@ -1,0 +1,69 @@
+{% load i18n staticfiles thumbnail cms_tags apphooks_config_tags %}
+{% load sekizai_tags %}
+
+{% block js %}
+{% addtoblock "js" %}
+<script>
+window.twttr = (function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0],
+t = window.twttr || {};
+if (d.getElementById(id)) return t;
+js = d.createElement(s);
+js.id = id;
+js.src = "https://platform.twitter.com/widgets.js";
+fjs.parentNode.insertBefore(js, fjs);
+t._e = [];
+t.ready = function(f) {
+t._e.push(f);
+};
+return t;
+}(document, "script", "twitter-wjs"));
+</script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
+<script>(function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+{% endaddtoblock %}
+{% endblock %}
+
+<article class="article
+    {% if article.is_featured %} featured{% endif %}
+    {% if not article.published %} unpublished{% endif %}">
+
+	{% if not detail_view %}
+		<div class="post-preview">
+        <a href="{% namespace_url 'article-detail' article.slug namespace=namespace default='' %}">
+            <h2 class="post-title">
+           {% render_model article "title" "" "" "striptags" %}
+            </h2>
+           {% if article.lead_in %}
+            <h3 class="post-subtitle">
+                {% if not detail_view %}
+                    {% render_model article "lead_in" "" "" "truncatewords:'30'|striptags" %}
+                {% else %}    
+                    {% render_model article "lead_in" "" "" "striptags" %}
+                {% endif %}
+            </h3>
+           {% endif %}
+        </a>
+        <p class="post-meta"> Posted by 
+            {% include "aldryn_newsblog/includes/author.html" with author=article.author %}
+            on {{ article.publishing_date|date:"F d, Y" }}
+			
+        </p>
+    </div>
+		<hr>
+	{% endif %}
+
+    
+    {% if detail_view %}
+        {% render_placeholder article.content language placeholder_language %}
+    {% endif %}
+	
+</article>
